@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace DataStructures
 {
-    public class Node
+    public class LinkNode
     {
-        public int Id;
-        public Node? Prev;
-        public Node? Next;
+        private int Id;
+        public LinkNode? Prev;
+        public LinkNode? Next;
 
-        public Node(int data)
+        public LinkNode(int data)
         {
             Id = data;
         }
@@ -21,7 +21,7 @@ namespace DataStructures
         {
             if (Next == null)
             {
-                Node newNode = new(data);
+                LinkNode newNode = new(data);
                 Next = newNode;
                 newNode.Prev = this;
             }
@@ -34,7 +34,7 @@ namespace DataStructures
         {
             if(count == index)
             {
-                Node newNode = new(data);
+                LinkNode newNode = new(data);
                 newNode.Next = Next;
                 newNode.Prev = this;
                 Next.Prev = newNode;
@@ -80,7 +80,7 @@ namespace DataStructures
 
     public class LinkList
     {
-        public Node? FirstNode;
+        public LinkNode? FirstNode;
         public void AddNodes(int data)
         {
             if(FirstNode == null)
@@ -100,7 +100,7 @@ namespace DataStructures
             }
             else
             {
-                Node node = new(data);
+                LinkNode node = new(data);
                 node.Next = FirstNode;
                 FirstNode = node;
             }
@@ -124,7 +124,7 @@ namespace DataStructures
             {
                 if(index == 0)
                 {
-                    Node node = FirstNode;
+                    LinkNode node = FirstNode;
                     FirstNode = node.Next;
                     FirstNode.Prev = null;
                 }
