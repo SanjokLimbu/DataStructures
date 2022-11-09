@@ -3,15 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace DataStructures
 {
     public class BinaryTreeNode
     {
-        private int Id;
+        private int _Id;
         public BinaryTreeNode? Prev;
         public BinaryTreeNode? LeftNode;
         public BinaryTreeNode? RightNode;
+        public int Id
+        {
+            get { return _Id; }
+            set { _Id = value; }
+        }
 
         public BinaryTreeNode(int data)
         {
@@ -78,28 +84,24 @@ namespace DataStructures
             }
             Console.Write(Id + "-> ");
         }
-        public void Find(int data)
+        public BinaryTreeNode Find(int data)
         {
             if(data == this.Id)
             {
-                Console.WriteLine(data + " Found.");
+                return this;
             }
             else if(data < this.Id && LeftNode != null)
             {
-                LeftNode.Find(data);
+                return LeftNode.Find(data);
             }
             else if(data > this.Id && RightNode != null)
             {
-                RightNode.Find(data);
+                return RightNode.Find(data);
             }
             else
             {
-                Console.WriteLine("Node not found.");
+                return null;
             }
-        }
-        public void Delete(int data)
-        {
-            
         }
     }
     public class BinaryTree
@@ -149,28 +151,143 @@ namespace DataStructures
                 Console.WriteLine("No nodes to traverse.");
             }
         }
-        public void Find(int data)
+        public BinaryTreeNode Find(int data)
         {
             if(FirstNode != null)
             {
-                FirstNode.Find(data);
+                return FirstNode.Find(data);
             }
             else
             {
                 Console.WriteLine("Empty tree. New Node is created instead.");
                 FirstNode = new(data);
+                return null;
             }
+        }
+        private BinaryTreeNode GetLastNode(BinaryTreeNode node)
+        {
+            BinaryTreeNode parentOfLastNode = node;
+            BinaryTreeNode LastNode = node;
+            BinaryTreeNode current = node.RightNode;
+
+            while(current != null){
+                parentOfLastNode = LastNode;
+                LastNode = current;
+                current = current.LeftNode;
+            }
+            if(LastNode != node.RightNode)
+            {
+                parentOfLastNode.LeftNode = LastNode.RightNode;
+                LastNode.RightNode = node.RightNode;
+            }
+            LastNode.LeftNode = node.LeftNode;
+
+            return LastNode;
         }
         public void Delete(int data)
         {
-            if(FirstNode != null)
+            BinaryTreeNode? current = FirstNode;
+            BinaryTreeNode? parent = FirstNode;
+            bool isLeftChild = false;
+            //Empty node
+            if (current == null)
             {
-                FirstNode.Delete(data);
+                Console.WriteLine("No Nodes to delete.");
+            }
+            //Find the node
+            while (current != null && current.Id != data)
+            {
+                parent = current;
+                if(data < current.Id && current.LeftNode != null)
+                {
+                    current = current.LeftNode;
+                    isLeftChild = true;
+                }
+                else
+                {
+                    if(current.RightNode != null)
+                    {
+                        current = current.RightNode;
+                        isLeftChild = false;
+                    }
+                }
+            }
+            if(current == null)
+            {
+                Console.WriteLine("No Nodes to delete.");
+            }
+            else if(current.RightNode == null && current.LeftNode == null)
+            {
+                if(current == FirstNode)
+                {
+                    FirstNode = null;
+                }
+                else
+                {
+                    if (isLeftChild)
+                    {
+                        parent.LeftNode = null;
+                    }
+                    else
+                    {
+                        parent.RightNode = null;
+                    }
+                }
+            }
+            else if(current.RightNode == null)
+            {
+                if(current == FirstNode)
+                {
+                    FirstNode = current.LeftNode;
+                }
+                else
+                {
+                    if (isLeftChild)
+                    {
+                        parent.LeftNode = current.LeftNode;
+                    }
+                    else
+                    {
+                        parent.RightNode = current.LeftNode;
+                    }
+                }
+            }
+            else if(current.LeftNode == null)
+            {
+                if(current == FirstNode)
+                {
+                    FirstNode = current.RightNode;
+                }
+                else
+                {
+                    if (isLeftChild)
+                    {
+                        parent.LeftNode = current.RightNode;
+                    }
+                    else
+                    {
+                        parent.RightNode = current.RightNode;
+                    }
+                }
             }
             else
             {
-                Console.WriteLine("No Nodes to delete found.");
+                BinaryTreeNode LastNode = GetLastNode(current);
+                if(current == FirstNode)
+                {
+                    FirstNode = LastNode;
+                }
+                else if (isLeftChild)
+                {
+                    parent.LeftNode = LastNode;
+                }
+                else
+                {
+                    parent.RightNode = LastNode;
+                }
             }
+            
         }
+
     }
 }
